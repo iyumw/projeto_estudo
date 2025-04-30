@@ -1,0 +1,118 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+:root {
+  --color-primary: #222530;
+  --color-secondary: #a99cbf;
+  --color-background: #f5f0e1;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+
+/* Apply custom colors */
+body {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+  font-family: "Poppins", sans-serif;
+}
+
+header {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+
+header a:hover {
+  color: var(--color-secondary);
+  transform: scale(1.05);
+}
+
+footer {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+
+.carousel-button {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+.carousel-indicator-active {
+  background-color: var(--color-secondary);
+}
+.carousel-indicator-inactive {
+  background-color: #d1d5db;
+}
+/* Product cards and buttons */
+.product-card {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.product-card:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  transform: scale(1.03);
+  transition: transform 0.2s ease-in-out;
+}
+.add-to-cart-btn {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+  transition: background-color 0.3s ease;
+}
+.add-to-cart-btn:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+  transition: ease-in-out 0.2s;
+}
+.add-to-wishlist-btn {
+  background-color: transparent;
+  color: var(--color-primary);
+}
+
+/* Add transition and hover effect directly to the icon inside the button */
+.add-to-wishlist-btn i {
+  transition: color 0.2s ease-in-out;
+}
+
+.add-to-wishlist-btn:hover i {
+  color: var(--color-secondary); 
+  transform: scale(1.1);
+  transition: transform 0.3s ease-in-out; 
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Styles for interactions */
+.fade-in-element {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in-element.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.button-clicked {
+  transform: scale(0.95);
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Hide default arrows on number inputs */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+  appearance: none; /* Standard */
+}
+
+/* Style for the quantity input on product detail page specifically */
+.product-details input[type="number"] {
+  /* You can add specific styles here if needed, */
+  /* but the general rules above should hide the arrows */
+  border: none; /* Example: remove border if it interferes with custom buttons */
+  text-align: center;
+}

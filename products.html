@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aura Beauty - Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add Alpine.js -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+  </head>
+  <body>
+    <header class="p-7 shadow-md">
+      <div class="container mx-auto flex justify-between items-center">
+        <a href="index.html" class="text-xl font-bold">
+          <img
+            src="./assets/skin-care_4383084.png"
+            alt="logo"
+            class="h-8 inline-block mr-2"
+          />
+          Aura Beauty
+        </a>
+        <nav>
+          <ul class="flex space-x-7 text-lg">
+            <li>
+              <a href="index.html" class="transition duration-200 ease-in-out"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                class="font-semibold transition duration-200 ease-in-out"
+                >Products</a
+              >
+            </li>
+            <li>
+              <a href="cart.html" class="transition duration-200 ease-in-out"
+                >Cart</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container mx-auto p-4 mt-8">
+      <h2 class="text-3xl font-semibold text-center mb-8">Our Products</h2>
+      <div
+        id="product-grid"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+      >
+        <!-- Product cards will be loaded here dynamically by scripts.js -->
+      </div>
+    </main>
+
+    <footer class="bg-primary text-background p-8 mt-16">
+      <div
+        class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left"
+      >
+        <!-- Quick Links -->
+        <div>
+          <h4 class="font-semibold mb-3 text-lg">Quick Links</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-secondary">About Us</a></li>
+            <li><a href="#" class="hover:text-secondary">Contact</a></li>
+            <li><a href="#" class="hover:text-secondary">FAQ</a></li>
+            <li>
+              <a href="#" class="hover:text-secondary">Terms & Conditions</a>
+            </li>
+          </ul>
+        </div>
+        <!-- Social Media -->
+        <div>
+          <h4 class="font-semibold mb-3 text-lg">Follow Us</h4>
+          <div class="flex justify-center md:justify-start space-x-4 text-xl">
+            <a href="#" class="hover:text-secondary" aria-label="Facebook"
+              ><i class="bi bi-facebook"></i
+            ></a>
+            <a href="#" class="hover:text-secondary" aria-label="Instagram"
+              ><i class="bi bi-instagram"></i
+            ></a>
+            <a href="#" class="hover:text-secondary" aria-label="Twitter"
+              ><i class="bi bi-twitter-x"></i
+            ></a>
+            <a href="#" class="hover:text-secondary" aria-label="Pinterest"
+              ><i class="bi bi-pinterest"></i
+            ></a>
+          </div>
+        </div>
+        <!-- Newsletter Signup (Mockup) -->
+        <div>
+          <h4 class="font-semibold mb-3 text-lg">Newsletter</h4>
+          <p class="text-sm mb-2">
+            Stay updated with our latest products and offers.
+          </p>
+          <form
+            class="flex flex-col sm:flex-row gap-2 justify-center md:justify-start"
+          >
+            <input
+              type="email"
+              placeholder="Enter your email"
+              class="px-3 py-1 rounded-md border border-gray-300 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary flex-grow"
+            />
+            <button
+              type="submit"
+              class="bg-secondary text-primary px-4 py-1 rounded-md text-sm font-semibold hover:bg-opacity-80 transition-opacity"
+            >
+              Subscribe
+            </button>
+          </form>
+        </div>
+      </div>
+      <div class="text-center text-xs border-t border-gray-700 mt-8 pt-4">
+        <p>&copy; 2025 Aura Beauty. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <script src="js/products.js"></script>
+    <!-- Include products data -->
+    <script src="js/scripts.js" defer></script>
+    <!-- Updated path -->
+  </body>
+</html>
