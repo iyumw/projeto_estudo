@@ -1,0 +1,20 @@
+{
+  "name": "studies-project",
+  "version": "1.0.0",
+  "description": "Este é um projeto de frontend para um site de e-commerce fictício chamado Aura Beauty, focado em produtos de beleza e cuidados com a pele.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iyumw/projeto_estudo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iyumw/projeto_estudo/issues"
+  },
+  "homepage": "https://github.com/iyumw/projeto_estudo#readme"
+}
