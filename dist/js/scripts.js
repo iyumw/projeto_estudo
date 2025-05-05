@@ -1,324 +1,265 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Ensures the script runs only after the full HTML document has been loaded and parsed.
-
-  // --- Scroll Reveal ---
-  // Configuration for the Intersection Observer API to detect when elements become visible.
-  const observerOptions = {
-    root: null, // Use the viewport as the root.
-    rootMargin: "0px", // No margin around the root.
-    threshold: 0.1, // Trigger when 10% of the element is visible.
-  };
-
-  // Callback function executed when an observed element intersects the viewport.
-  const observerCallback = (entries, observer) => {
-    entries.forEach((entry) => {
-      // Check if the element is intersecting (visible).
-      if (entry.isIntersecting) {
-        // Add the 'is-visible' class to trigger the fade-in animation.
-        entry.target.classList.add("is-visible");
-        // Stop observing the element once it has become visible to prevent re-triggering.
-        observer.unobserve(entry.target);
-      }
-    });
-  };
-
-  // Create a new Intersection Observer instance.
-  const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-  // Select all elements that should have the fade-in effect.
-  const elementsToFade = document.querySelectorAll(".fade-in-element");
-  // Start observing each selected element.
-  elementsToFade.forEach((el) => observer.observe(el));
-
-  // --- Button Click Feedback ---
-  // Provides visual feedback when certain buttons are clicked.
-  const buttons = document.querySelectorAll(
-    ".add-to-cart-btn, .add-to-wishlist-btn" // Select all relevant buttons.
-  );
-
-  buttons.forEach((button) => {
-    // Add 'button-clicked' class on mouse down for visual effect.
-    button.addEventListener("mousedown", () => {
-      button.classList.add("button-clicked");
-    });
-    // Remove the class on mouse up.
-    button.addEventListener("mouseup", () => {
-      button.classList.remove("button-clicked");
-    });
-    // Remove the class if the mouse leaves the button while pressed down.
-    button.addEventListener("mouseleave", () => {
-      button.classList.remove("button-clicked");
-    });
-    // Remove the class when the button loses focus (e.g., tabbing away).
-    button.addEventListener("focusout", () => {
-      button.classList.remove("button-clicked");
-    });
-  });
-
-  // --- Load Products into Grid (for index.html, products.html, etc.) ---
-  // Dynamically populates the product grid if it exists on the page and product data is available.
-  const productGrid = document.getElementById("product-grid");
-  // Check if the grid element exists and the 'products' array (from products.js) is defined.
-  if (productGrid && typeof products !== "undefined") {
-    // Clear any existing content in the grid (e.g., placeholders).
-    productGrid.innerHTML = "";
-    // Define the delay between animating each product card for a staggered effect.
-    const staggerDelayMs = 150;
-
-    // Iterate over the products array (defined in js/products.js).
-    products.forEach((product, index) => {
-      // Create the main link element for the product card.
-      const cardLink = document.createElement("a");
-      cardLink.href = `product-detail.html?product=${product.id}.png`; // Link to product detail page.
-      cardLink.className = "product-card-link block group"; // Tailwind classes for styling.
-
-      // Create the container div for the card content.
-      const cardDiv = document.createElement("div");
-      cardDiv.className =
-        "product-card fade-in-element rounded-lg overflow-hidden shadow-sm p-3 flex flex-col h-full group-hover:shadow-lg transition-shadow duration-200"; // Styling and fade-in class.
-
-      // Create a container for the image and wishlist button.
-      const imageContainer = document.createElement("div");
-      imageContainer.className = "relative"; // For positioning the absolute wishlist button.
-
-      // Create the product image element.
-      const img = document.createElement("img");
-      img.src = product.image;
-      img.alt = product.name;
-      img.className = "w-full h-40 object-contain mb-3"; // Styling for the image.
-
-      // Create the Wishlist Button dynamically for each card.
-      const wishlistButton = document.createElement("button");
-      // Classes for styling and importantly, for the global event listener to identify it.
-      wishlistButton.className =
-        "card-wishlist-btn add-to-wishlist-btn icon-button absolute top-2 right-2 z-10";
-      wishlistButton.setAttribute("aria-label", "Add to Wishlist"); // Accessibility label.
-      wishlistButton.dataset.productId = product.id; // Store product ID for the event listener.
-      wishlistButton.innerHTML = '<i class="bi bi-heart text-xl"></i>'; // Initial heart icon.
-
-      // Add the image and wishlist button to their container.
-      imageContainer.appendChild(img);
-      imageContainer.appendChild(wishlistButton);
-
-      // Create the product title element.
-      const title = document.createElement("h3");
-      title.className = "text-lg font-semibold mb-1";
-      title.textContent = product.name;
-
-      // Create the product description element.
-      const description = document.createElement("p");
-      description.className = "text-sm text-gray-600 mb-2 flex-grow"; // flex-grow makes it take available space.
-      description.textContent = product.description;
-
-      // Create a footer div to hold price and buttons.
-      const footerDiv = document.createElement("div");
-      footerDiv.className = "flex justify-between items-center mt-auto pt-2"; // mt-auto pushes it to the bottom.
-
-      // Create the price element.
-      const price = document.createElement("p");
-      price.className = "text-md font-bold";
-      price.textContent = `$${product.price.toFixed(2)}`; // Format price to 2 decimal places.
-
-      // Create a container for the action buttons (currently just Add to Cart).
-      const buttonsDiv = document.createElement("div");
-      buttonsDiv.className = "flex justify-start items-center gap-x-2";
-
-      // Create the Add to Cart Button dynamically.
-      const cartButton = document.createElement("button");
-      cartButton.className =
-        "add-to-cart-btn icon-button py-1 px-3 rounded z-10 relative"; // Styling classes.
-      cartButton.setAttribute("aria-label", "Add to Cart"); // Accessibility label.
-      cartButton.dataset.productId = product.id; // Store product ID for the click handler.
-      // Define the inline click handler for the Add to Cart button.
-      cartButton.onclick = (event) => {
-        event.preventDefault(); // Prevent the parent link from navigating immediately.
-        // Find the product details using the ID stored in the button's dataset.
-        const clickedProductId = event.currentTarget.dataset.productId;
-        const productToAdd = products.find((p) => p.id === clickedProductId);
-        if (productToAdd) {
-          // Call the global addToCart function (defined below).
-          addToCart(productToAdd);
-          // Optional: Provide feedback to the user.
-          console.log(`Added ${productToAdd.name} to cart.`);
-          // Change button icon briefly to show success.
-          event.currentTarget.innerHTML =
-            '<i class="bi bi-cart-check-fill text-xl"></i>';
-          // Revert icon after a delay.
-          setTimeout(() => {
-            event.currentTarget.innerHTML =
-              '<i class="bi bi-cart-plus text-xl"></i>';
-          }, 1500);
-        }
-      };
-      cartButton.innerHTML = '<i class="bi bi-cart-plus text-xl"></i>'; // Set initial cart icon.
-
-      // Add the cart button to its container.
-      buttonsDiv.appendChild(cartButton);
-
-      // Add price and button container to the footer.
-      footerDiv.appendChild(price);
-      footerDiv.appendChild(buttonsDiv);
-
-      // Assemble the card: image container, title, description, footer.
-      cardDiv.appendChild(imageContainer);
-      cardDiv.appendChild(title);
-      cardDiv.appendChild(description);
-      cardDiv.appendChild(footerDiv);
-
-      // Add the complete card div to the link element.
-      cardLink.appendChild(cardDiv);
-      // Add the link element (containing the card) to the product grid.
-      productGrid.appendChild(cardLink);
-
-      // Trigger the fade-in animation with a staggered delay based on the product index.
-      setTimeout(() => {
-        cardDiv.classList.add("is-visible");
-      }, index * staggerDelayMs);
-    });
-
-    // Re-initialize button click feedback for the newly added dynamic buttons.
-    // Select buttons *within* the product grid that were just created.
-    const newButtons = productGrid.querySelectorAll(
-      ".add-to-cart-btn, .card-wishlist-btn"
-    );
-    newButtons.forEach((button) => {
-      // Add the same mousedown/mouseup/mouseleave/focusout listeners as above.
-      button.addEventListener("mousedown", () => {
-        button.classList.add("button-clicked");
-      });
-      button.addEventListener("mouseup", () => {
-        button.classList.remove("button-clicked");
-      });
-      button.addEventListener("mouseleave", () => {
-        button.classList.remove("button-clicked");
-      });
-      button.addEventListener("focusout", () => {
-        button.classList.remove("button-clicked");
-      });
-    });
+  // Função principal de inicialização chamada após o DOM carregar.
+  function init() {
+    console.log("DOM fully loaded. Initializing features...");
+    initScrollReveal();
+    initButtonClickFeedback(); // Inicializa para botões estáticos
+    initGlobalCartFunctions();
+    initWishlistButtonListener(); // Configura listener global para wishlist
+    loadProductGrid(); // Carrega produtos e inicializa feedback para botões dinâmicos
+    updateCartCount(); // Atualiza contagem inicial do carrinho
   }
 
-  // --- Global Cart Functions ---
+  // --- 1. Scroll Reveal ---
+  function initScrollReveal() {
+    const observerOptions = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.1,
+    };
 
-  // Make addToCart function globally accessible (e.g., from product detail page).
-  // Adds a product to the shopping cart stored in localStorage.
-  window.addToCart = function (product, quantity = 1) {
-    // Allow specifying quantity, default to 1.
-    // Retrieve the current cart from localStorage, or initialize an empty array if none exists.
-    let cart = JSON.parse(localStorage.getItem("shoppingCart")) || [];
+    const observerCallback = (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target); // Observa apenas uma vez
+        }
+      });
+    };
 
-    // Check if the product (by ID) is already in the cart.
-    const existingItemIndex = cart.findIndex((item) => item.id === product.id);
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    const elementsToFade = document.querySelectorAll(".fade-in-element");
+    elementsToFade.forEach((el) => observer.observe(el));
+    console.log("Scroll Reveal initialized for", elementsToFade.length, "elements.");
+  }
 
-    if (existingItemIndex > -1) {
-      // If the item exists, increment its quantity.
-      cart[existingItemIndex].quantity += quantity;
-    } else {
-      // If the item is new, add it to the cart array with the specified quantity.
-      // Use spread syntax (...) to copy product properties and add the quantity.
-      cart.push({ ...product, quantity: quantity });
-    }
+  // --- 2. Button Click Feedback ---
+  // Função auxiliar para adicionar listeners de feedback a um botão
+  function addButtonFeedbackListeners(button) {
+    button.addEventListener("mousedown", () => button.classList.add("button-clicked"));
+    button.addEventListener("mouseup", () => button.classList.remove("button-clicked"));
+    button.addEventListener("mouseleave", () => button.classList.remove("button-clicked"));
+    button.addEventListener("focusout", () => button.classList.remove("button-clicked"));
+  }
 
-    // Save the updated cart array back to localStorage, converting it to a JSON string.
-    localStorage.setItem("shoppingCart", JSON.stringify(cart));
+  // Inicializa feedback para botões que já existem no DOM ao carregar
+  function initButtonClickFeedback() {
+    const staticButtons = document.querySelectorAll(".add-to-cart-btn, .add-to-wishlist-btn");
+    staticButtons.forEach(addButtonFeedbackListeners);
+    console.log("Button click feedback initialized for static buttons.");
+  }
 
-    // Update the cart item count displayed in the navigation header.
-    updateCartCount(); // Call the global update function (defined below).
-  };
-
-  // Make updateCartCount function globally accessible.
-  // Updates the cart item count badge in the navigation bar.
-  window.updateCartCount = function () {
-    // Retrieve the current cart from localStorage.
-    let cart = JSON.parse(localStorage.getItem("shoppingCart")) || [];
-    // Calculate the total number of items by summing the quantities of all items in the cart.
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-    // Find the navigation link element for the cart page.
-    const cartCountElement = document.querySelector('nav a[href="cart.html"]');
-    if (cartCountElement) {
-      // Check if the badge span already exists.
-      let countSpan = cartCountElement.querySelector(".cart-count-badge");
-      if (!countSpan) {
-        // If the badge doesn't exist, create it.
-        countSpan = document.createElement("span");
-        countSpan.className =
-          "cart-count-badge bg-secondary text-primary text-xs font-bold rounded-full px-1.5 py-0.5 ml-1"; // Styling classes.
-        // Append the new badge to the cart navigation link.
-        cartCountElement.appendChild(countSpan);
+  // --- 3. Global Cart Functions ---
+  function initGlobalCartFunctions() {
+    // Adiciona um produto ao carrinho no localStorage.
+    window.addToCart = function (product, quantity = 1) {
+      if (!product || !product.id) {
+          console.error("addToCart: Invalid product data provided.", product);
+          return;
       }
+      let cart = JSON.parse(localStorage.getItem("shoppingCart")) || [];
+      const existingItemIndex = cart.findIndex((item) => item.id === product.id);
 
-      // Update the badge text and visibility based on the total item count.
+      if (existingItemIndex > -1) {
+        cart[existingItemIndex].quantity += quantity;
+      } else {
+        // Garante que apenas dados necessários sejam adicionados
+        cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: quantity
+        });
+      }
+      localStorage.setItem("shoppingCart", JSON.stringify(cart));
+      updateCartCount(); // Atualiza o contador visual
+      console.log(`Product ${product.id} quantity updated/added.`);
+    };
+
+    // Atualiza o contador visual do carrinho no header.
+    window.updateCartCount = function () {
+      let cart = JSON.parse(localStorage.getItem("shoppingCart")) || [];
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      // Tenta encontrar o link da nav e o badge dentro dele
+      const cartNavLink = document.querySelector('nav a[href="cart.html"]');
+      if (!cartNavLink) return; // Sai se o link do carrinho não for encontrado
+
+      let countSpan = cartNavLink.querySelector(".cart-count-badge");
+
       if (totalItems > 0) {
-        countSpan.textContent = totalItems; // Display the count.
-        countSpan.style.display = "inline-block"; // Make it visible.
+        if (!countSpan) {
+          // Cria o badge se não existir
+          countSpan = document.createElement("span");
+          countSpan.className = "cart-count-badge bg-secondary text-primary text-xs font-bold rounded-full px-1.5 py-0.5 ml-1";
+          cartNavLink.appendChild(countSpan); // Adiciona ao link
+        }
+        countSpan.textContent = totalItems;
+        countSpan.style.display = "inline-block";
       } else {
-        countSpan.style.display = "none"; // Hide the badge if the cart is empty.
+        // Esconde ou remove o badge se o carrinho estiver vazio
+        if (countSpan) {
+          countSpan.style.display = "none";
+        }
       }
-    }
-  };
+    };
+    console.log("Global cart functions (addToCart, updateCartCount) initialized.");
+  }
 
-  // --- Initial Setup Calls ---
+  // --- 4. Product Grid Loading ---
+  // Função auxiliar para criar o elemento HTML de um card de produto
+  function createProductCardElement(product, index, staggerDelayMs) {
+     const cardLink = document.createElement("a");
+     cardLink.href = `product-detail.html?id=${product.id}`;
+     cardLink.className = "product-card-link block group";
 
-  // Update the cart count immediately when the page loads to reflect the current cart state.
-  updateCartCount();
+     const cardDiv = document.createElement("div");
+     cardDiv.className = "product-card fade-in-element rounded-lg overflow-hidden shadow-sm p-3 flex flex-col h-full group-hover:shadow-lg transition-shadow duration-200";
 
-  // --- Event Delegation for ALL Wishlist Buttons ---
-  // Use event delegation on the body to handle clicks on any wishlist button,
-  // including those added dynamically (like in the product grid).
-  document.body.addEventListener("click", function (event) {
-    // Check if the clicked element or its ancestor is a wishlist button.
-    // `closest()` efficiently finds the nearest element matching the selector.
-    const wishlistButton = event.target.closest(".add-to-wishlist-btn"); // Target the common class.
+     const imageContainer = document.createElement("div");
+     imageContainer.className = "relative";
 
-    // If the click was not on or inside a wishlist button, do nothing.
-    if (!wishlistButton) {
+     const img = document.createElement("img");
+     // Usa placeholder se imagem não existir
+     img.src = product.image || 'https://placehold.co/300x160/f5f0e1/a99cbf?text=No+Image';
+     img.alt = product.name || "Product Image";
+     img.className = "w-full h-40 object-contain mb-3";
+     img.onerror = "this.src='https://placehold.co/300x160/f5f0e1/a99cbf?text=Error';"; // Fallback de erro
+
+     const wishlistButton = document.createElement("button");
+     wishlistButton.className = "card-wishlist-btn add-to-wishlist-btn icon-button absolute top-2 right-2 z-10"; // Classe comum para delegação
+     wishlistButton.setAttribute("aria-label", "Add to Wishlist");
+     wishlistButton.dataset.productId = product.id;
+     wishlistButton.innerHTML = '<i class="bi bi-heart text-xl"></i>';
+     // TODO: Adicionar lógica para verificar se o item já está na wishlist e mostrar bi-heart-fill
+
+     imageContainer.appendChild(img);
+     imageContainer.appendChild(wishlistButton);
+
+     const title = document.createElement("h3");
+     title.className = "text-lg font-semibold mb-1";
+     title.textContent = product.name || "Unnamed Product";
+
+     const description = document.createElement("p");
+     description.className = "text-sm text-gray-600 mb-2 flex-grow";
+     description.textContent = product.description || "No description available."; // Descrição padrão
+
+     const footerDiv = document.createElement("div");
+     footerDiv.className = "flex justify-between items-center mt-auto pt-2";
+
+     const price = document.createElement("p");
+     price.className = "text-md font-bold";
+     price.textContent = `$${(product.price || 0).toFixed(2)}`; // Preço padrão 0
+
+     const buttonsDiv = document.createElement("div");
+     buttonsDiv.className = "flex justify-start items-center gap-x-2";
+
+     const cartButton = document.createElement("button");
+     cartButton.className = "add-to-cart-btn icon-button py-1 px-3 rounded z-10 relative"; // Classe comum
+     cartButton.setAttribute("aria-label", "Add to Cart");
+     cartButton.dataset.productId = product.id;
+     cartButton.innerHTML = '<i class="bi bi-cart-plus text-xl"></i>';
+
+     // Event listener para o botão Add to Cart (em vez de onclick)
+     cartButton.addEventListener('click', (event) => {
+         event.preventDefault(); // Previne navegação do link pai
+         event.stopPropagation(); // Impede que o clique chegue ao listener do body (se houver)
+
+         const clickedProductId = event.currentTarget.dataset.productId;
+         // Assume que 'products' está acessível aqui ou busca novamente se necessário
+         const productToAdd = typeof products !== 'undefined' ? products.find((p) => p.id === clickedProductId) : null;
+
+         if (productToAdd) {
+             addToCart(productToAdd); // Chama a função global
+             console.log(`Added ${productToAdd.name} to cart via card button.`);
+             // Feedback visual no botão
+             event.currentTarget.innerHTML = '<i class="bi bi-cart-check-fill text-xl"></i>';
+             setTimeout(() => {
+                 event.currentTarget.innerHTML = '<i class="bi bi-cart-plus text-xl"></i>';
+             }, 1500);
+         } else {
+             console.error("Could not find product data for ID:", clickedProductId);
+         }
+     });
+
+
+     buttonsDiv.appendChild(cartButton);
+     footerDiv.appendChild(price);
+     footerDiv.appendChild(buttonsDiv);
+
+     cardDiv.appendChild(imageContainer);
+     cardDiv.appendChild(title);
+     cardDiv.appendChild(description);
+     cardDiv.appendChild(footerDiv);
+
+     cardLink.appendChild(cardDiv);
+
+     // Aplica animação com delay
+     setTimeout(() => {
+         cardDiv.classList.add("is-visible");
+     }, index * staggerDelayMs);
+
+     return cardLink; // Retorna o elemento completo do link/card
+  }
+
+  // Carrega os produtos na grade
+  function loadProductGrid() {
+    const productGrid = document.getElementById("product-grid");
+    // Verifica se a grade existe e se o array 'products' foi carregado (de products.js)
+    if (!productGrid || typeof products === "undefined") {
+      console.log("Product grid not found or products array is missing. Skipping grid loading.");
       return;
     }
 
-    // Prevent default actions (like link navigation) if the button is inside an anchor tag.
-    event.preventDefault();
-    // Stop the event from bubbling up further (optional, but can prevent unintended side effects).
-    event.stopPropagation();
+    console.log("Loading products into grid...");
+    productGrid.innerHTML = ""; // Limpa placeholders
+    const staggerDelayMs = 100; // Delay menor para parecer mais rápido
 
-    // Find the icon element within the clicked button.
-    const icon = wishlistButton.querySelector("i");
-    if (!icon) {
-      // Error handling if the icon isn't found (shouldn't happen with current HTML structure).
-      console.error("Could not find icon element within the wishlist button.");
-      return;
-    }
+    products.forEach((product, index) => {
+      const cardElement = createProductCardElement(product, index, staggerDelayMs);
+      productGrid.appendChild(cardElement);
+    });
 
-    // Toggle the Bootstrap icon classes to switch between filled and empty heart.
-    // `toggle()` returns true if the class was added, false if removed.
-    const isWishlisted = icon.classList.toggle("bi-heart-fill"); // Add filled heart, returns true if added.
-    icon.classList.toggle("bi-heart", !isWishlisted); // Add empty heart if filled was removed (isWishlisted is false).
+    const dynamicButtons = productGrid.querySelectorAll(".add-to-cart-btn, .card-wishlist-btn");
+    dynamicButtons.forEach(addButtonFeedbackListeners);
+    console.log("Product grid loaded. Feedback listeners applied to dynamic buttons.");
+  }
 
-    // Optionally, toggle a class on the button itself for additional styling.
-    wishlistButton.classList.toggle("wishlist-added", isWishlisted);
+  // --- 5. Wishlist Button Listener (Global) ---
+  function initWishlistButtonListener() {
+    document.body.addEventListener("click", function (event) {
+      const wishlistButton = event.target.closest(".add-to-wishlist-btn"); // Usa a classe comum
+      if (!wishlistButton) return; // Sai se não for um botão de wishlist
 
-    // --- Wishlist Persistence Logic (Placeholder) ---
-    // Get the product ID stored in the button's data attribute.
-    const productId = wishlistButton.dataset.productId;
-    if (productId) {
-      // Log action based on the product ID if available (e.g., for card buttons).
-      if (isWishlisted) {
-        console.log(`Added product ${productId} to Wishlist`);
-        // TODO: Add logic to actually save the product ID to a wishlist (e.g., in localStorage).
+      event.preventDefault();
+      event.stopPropagation();
+
+      const icon = wishlistButton.querySelector("i");
+      if (!icon) return;
+
+      // Alterna o ícone e o estado
+      const isWishlisted = icon.classList.toggle("bi-heart-fill");
+      icon.classList.toggle("bi-heart", !isWishlisted);
+      wishlistButton.classList.toggle("wishlist-added", isWishlisted);
+
+      // Lógica de persistência (Placeholder)
+      const productId = wishlistButton.dataset.productId;
+      if (productId) {
+        if (isWishlisted) {
+          console.log(`TODO: Add product ${productId} to wishlist storage.`);
+          // Ex: addToWishlistStorage(productId);
+        } else {
+          console.log(`TODO: Remove product ${productId} from wishlist storage.`);
+          // Ex: removeFromWishlistStorage(productId);
+        }
       } else {
-        console.log(`Removed product ${productId} from Wishlist`);
-        // TODO: Add logic to remove the product ID from the wishlist.
+        console.warn("Wishlist button clicked without a product ID.");
       }
-    } else {
-      // Handle cases where the button might not have a product ID initially
-      // (e.g., potentially the button on the product detail page if not set up).
-      if (isWishlisted) {
-        console.log(`Added item to Wishlist (Detail Page or missing ID)`);
-      } else {
-        console.log(`Removed item from Wishlist (Detail Page or missing ID)`);
-      }
-      // Ensure product-detail.js adds the dataset.productId to its wishlist button.
-    }
-    // Note: Actual persistence (saving the wishlist state) is not implemented here yet.
-  });
-}); // End of DOMContentLoaded listener
+    });
+    console.log("Global wishlist button listener initialized.");
+  }
+
+  // --- Executa a Inicialização ---
+  init();
+
+});
