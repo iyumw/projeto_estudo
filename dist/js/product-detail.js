@@ -2,16 +2,19 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Get product ID from URL query parameter (e.g., ?product=02.png)
   const urlParams = new URLSearchParams(window.location.search);
-  const productIdWithExt = urlParams.get("product"); // e.g., "02.png"
+  const productIdFromUrl = urlParams.get("id"); // e.g., "02.png"
+  console.log("Raw Product ID from URL:", productIdFromUrl);
 
   // If no product ID is found in the URL, display a not found message and stop.
-  if (!productIdWithExt) {
+  if (!productIdFromUrl) {
+    console.log("No product ID in URL.");
     displayProductNotFound();
     return;
   }
 
   // Extract the ID part (e.g., "02" from "02.png") assuming format ID.extension
-  const productId = productIdWithExt.split(".")[0];
+  const productId = productIdFromUrl;
+  console.log("Extracted Product ID:", productId); // LOG 3
 
   // Find the product in the global products array (expected to be defined in js/products.js)
   // Check if the 'products' array exists before trying to find the product.
@@ -22,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // If the product with the extracted ID is not found in the array, display not found message.
   if (!product) {
+    console.log("Product not found in array or array was undefined."); // LOG 6
     displayProductNotFound();
     return;
   }
@@ -113,7 +117,7 @@ function setupInteractions(product) {
   // Event listener for the 'Add to Cart' button.
   addToCartBtn.addEventListener("click", () => {
     const quantity = parseInt(quantityInput.value);
-    // Check if quantity is valid and the global addToCart function (from js/cart-utils.js) exists.
+    // Check if quantity is valid and the global addToCart function
     if (quantity > 0 && typeof window.addToCart === "function") {
       // Call the global function to add the product to the cart.
       window.addToCart(product, quantity);
